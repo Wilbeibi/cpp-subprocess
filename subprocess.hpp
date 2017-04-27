@@ -53,7 +53,7 @@ extern "C" {
   #include <unistd.h>
   #include <fcntl.h>
   #include <sys/types.h>
-  #include <sys/wait.h>    
+  #include <sys/wait.h>
   #include <signal.h>
 }
 
@@ -67,7 +67,7 @@ extern "C" {
  *    library: OSError and CalledProcessError
  *
  * 2. Popen Class
- *    This is the main class the users will deal with. It 
+ *    This is the main class the users will deal with. It
  *    provides with all the API's to deal with processes.
  *
  * 3. Util namespace
@@ -89,11 +89,11 @@ static const size_t SP_MAX_ERR_BUF_SIZ = 1024;
 // Default buffer capcity for OutBuffer and ErrBuffer.
 // If the data exceeds this capacity, the buffer size is grown
 // by 1.5 times its previous capacity
-static const size_t DEFAULT_BUF_CAP_BYTES = 8192; 
+static const size_t DEFAULT_BUF_CAP_BYTES = 8192;
 
 
 /*-----------------------------------------------
- *    EXCEPTION CLASSES 
+ *    EXCEPTION CLASSES
  *-----------------------------------------------
  */
 
@@ -139,11 +139,11 @@ namespace util
   /*!
    * Function: split
    * Parameters:
-   * [in] str : Input string which needs to be split based upon the 
+   * [in] str : Input string which needs to be split based upon the
    *		delimiters provided.
-   * [in] deleims : Delimiter characters based upon which the string needs
+   * [in] delims : Delimiter characters based upon which the string needs
    *		    to be split. Default constructed to ' '(space) and '\t'(tab)
-   * [out] vector<string> : Vector of strings split at deleimiter.
+   * [out] vector<string> : Vector of strings split at delimiter.
    */
   static std::vector<std::string>
   split(const std::string& str, const std::string& delims=" \t")
@@ -170,9 +170,9 @@ namespace util
    * Function: join
    * Parameters:
    * [in] vec : Vector of strings which needs to be joined to form
-   *		a single string with words seperated by
-   *		a seperator char.
-   *  [in] sep : String used to seperate 2 words in the joined string.
+   *		a single string with words separated by
+   *		a separate char.
+   *  [in] sep : String used to separate 2 words in the joined string.
    *		 Default constructed to ' ' (space).
    *  [out] string: Joined string.
    */
@@ -237,7 +237,7 @@ namespace util
    * Writes `length` bytes to the file descriptor `fd`
    * from the buffer `buf`.
    * Parameters:
-   * [in] fd : The file descriptotr to write to.
+   * [in] fd : The file descriptor to write to.
    * [in] buf: Buffer from which data needs to be written to fd.
    * [in] length: The number of bytes that needs to be written from
    *		  `buf` to `fd`.
@@ -258,7 +258,7 @@ namespace util
 
   /*!
    * Function: read_atmost_n
-   * Reads at the most `read_upto` bytes from the 
+   * Reads at the most `read_upto` bytes from the
    * file descriptor `fd` before returning.
    * Parameters:
    * [in] fd : The file descriptor from which it needs to read.
@@ -318,7 +318,7 @@ namespace util
     while (1) {
       int rd_bytes = read_atmost_n(fd, buffer, buf.size());
       if (rd_bytes == increment) {
-	// Resize the buffer to accomodate more
+	// Resize the buffer to accommodate more
 	orig_size = orig_size * 1.5;
 	increment = orig_size - buf.size();
 	buf.resize(orig_size);
@@ -355,7 +355,7 @@ namespace util
     int status = 0;
     int ret = -1;
     while (1) {
-      ret = waitpid(pid, &status, WNOHANG); 
+      ret = waitpid(pid, &status, WNOHANG);
       if (ret == -1) break;
       if (ret == 0) continue;
       return std::make_pair(ret, status);
@@ -379,7 +379,7 @@ namespace util
  * streams of the child process.
  * Default value is 0.
  */
-struct bufsize { 
+struct bufsize {
   bufsize(int siz): bufsiz(siz) {}
   int  bufsiz = 0;
 };
@@ -389,7 +389,7 @@ struct bufsize {
  * till `Popen::start_process` API is called.
  * Default value is false.
  */
-struct defer_spawn { 
+struct defer_spawn {
   defer_spawn(bool d): defer(d) {}
   bool defer  = false;
 };
@@ -403,7 +403,7 @@ struct defer_spawn {
  *
  * Default value is false.
  */
-struct close_fds { 
+struct close_fds {
   close_fds(bool c): close_all(c) {}
   bool close_all = false;
 };
@@ -436,9 +436,9 @@ struct string_arg
 };
 
 /*!
- * Option to specify the executable name seperately
+ * Option to specify the executable name separately
  * from the args sequence.
- * In this case the cmd args must only contain the 
+ * In this case the cmd args must only contain the
  * options required for this executable.
  *
  * Eg: executable{"ls"}
@@ -480,7 +480,7 @@ struct environment
 /*!
  * Used for redirecting input/output/error
  */
-enum IOTYPE { 
+enum IOTYPE {
   STDOUT = 1,
   STDERR,
   PIPE,
@@ -493,7 +493,7 @@ enum IOTYPE {
  * process. It can be:
  * 1. An already open file descriptor.
  * 2. A file name.
- * 3. IOTYPE. Usuall a PIPE
+ * 3. IOTYPE. Usually a PIPE
  *
  * Eg: input{PIPE}
  * OR in case of redirection, output of another Popen
@@ -568,12 +568,12 @@ struct error
   error(FILE* fp):error(fileno(fp)) { assert(fp); }
 
   error(const char* filename) {
-    int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640); 
+    int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640);
     if (fd == -1) throw OSError("File not found: ", errno);
     wr_ch_ = fd;
   }
   error(IOTYPE typ) {
-    assert ((typ == PIPE || typ == STDOUT) && "STDERR not aloowed");
+    assert ((typ == PIPE || typ == STDOUT) && "STDERR not allowed");
     if (typ == PIPE) {
       std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
     } else {
@@ -592,8 +592,8 @@ struct error
 // needed to provide the functionality of preexec_func
 // ATTN: Can be used only to execute functions with no
 // arguments and returning void.
-// Could have used more efficient methods, ofcourse, but
-// that wont yield me the consistent syntax which I am 
+// Could have used more efficient methods, of course, but
+// that wont yield me the consistent syntax which I am
 // aiming for. If you know, then please do let me know.
 
 class preexec_func
@@ -685,8 +685,8 @@ namespace detail {
 // Metaprogram for searching a type within
 // a variadic parameter pack
 // This is particularly required to do a compile time
-// checking of the arguments provided to 'check_ouput' function
-// wherein the user is not expected to provide an 'ouput' option.
+// checking of the arguments provided to 'check_output' function
+// wherein the user is not expected to provide an 'output' option.
 
 template <typename... T> struct param_pack{};
 
@@ -711,15 +711,16 @@ struct has_type<F, param_pack<H,T...>> {
 //----
 
 /*!
- * A helper class to Popen class for setting 
+ * A helper class to Popen class for setting
  * options as provided in the Popen constructor
  * or in check_ouput arguments.
  * This design allows us to _not_ have any fixed position
- * to any arguments and specify them in a way similar to what 
+ * to any arguments and specify them in a way similar to what
  * can be done in python.
  */
-struct ArgumentDeducer
+class ArgumentDeducer
 {
+public:
   ArgumentDeducer(Popen* p): popen_(p) {}
 
   void set_option(executable&& exe);
@@ -755,7 +756,7 @@ public:
   void execute_child();
 
 private:
-  // Lets call it parent even though 
+  // Lets call it parent even though
   // technically a bit incorrect
   Popen* parent_ = nullptr;
   int err_wr_pipe_ = -1;
@@ -803,7 +804,7 @@ private:
  * This is a helper class to Popen.
  * It takes care of management of all the file descriptors
  * and file pointers.
- * It dispatches of the communication aspects to the 
+ * It dispatches of the communication aspects to the
  * Communication class.
  * Read through the data members to understand about the
  * various file descriptors used.
@@ -920,10 +921,10 @@ private:
  * 9. communicate(...)   - Get the output/error from the child and close the channels
  *			   from the parent side.
  *10. input()            - Get the input channel/File pointer. Can be used for
- *			   cutomizing the way of sending input to child.
+ *			   customizing the way of sending input to child.
  *11. output()           - Get the output channel/File pointer. Usually used
 			   in case of redirection. See piping examples.
- *12. error()            - Get the error channel/File poiner. Usually used
+ *12. error()            - Get the error channel/File pointer. Usually used
 			   in case of redirection.
  *13. start_process()    - Start the child process. Only to be used when
  *                         `defer_spawn` option was provided in Popen constructor.
@@ -935,7 +936,7 @@ public:
   friend class detail::Child;
 
   template <typename... Args>
-  Popen(const std::string& cmd_args, Args&& ...args): 
+  Popen(const std::string& cmd_args, Args&& ...args):
     args_(cmd_args)
   {
     vargs_ = util::split(cmd_args);
@@ -977,7 +978,7 @@ public:
 
   void set_err_buf_cap(size_t cap) { stream_.set_err_buf_cap(cap); }
 
-  int send(const char* msg, size_t length) 
+  int send(const char* msg, size_t length)
   { return stream_.send(msg, length); }
 
   int send(const std::vector<char>& msg)
@@ -1092,7 +1093,7 @@ int Popen::wait() throw (OSError)
 int Popen::poll() throw (OSError)
 {
   int status;
-  if (!child_created_) return -1; // TODO: ??
+  if (!child_created_) return -2; // TODO: differentiate with `still running`
 
   // Returns zero if child is still running
   int ret = waitpid(child_pid_, &status, WNOHANG);
@@ -1170,10 +1171,9 @@ void Popen::execute_process() throw (CalledProcessError, OSError)
 
     detail::Child chld(this, err_wr_pipe);
     chld.execute_child();
-  } 
-  else 
+  }
+  else
   {
-    int sys_ret = -1;
     close (err_wr_pipe);// close child side of pipe, else get stuck in read below
 
     stream_.close_child_fds();
@@ -1182,8 +1182,8 @@ void Popen::execute_process() throw (CalledProcessError, OSError)
       char err_buf[SP_MAX_ERR_BUF_SIZ] = {0,};
 
       int read_bytes = util::read_atmost_n(
-				  err_rd_pipe, 
-				  err_buf, 
+				  err_rd_pipe,
+				  err_buf,
 				  SP_MAX_ERR_BUF_SIZ);
       close(err_rd_pipe);
 
@@ -1301,13 +1301,13 @@ namespace detail {
       _dup2_(stream.err_write_,        2); // Error stream
 
       // Close the duped descriptors
-      if (stream.read_from_parent_ != -1 && stream.read_from_parent_ > 2) 
+      if (stream.read_from_parent_ != -1 && stream.read_from_parent_ > 2)
       	close(stream.read_from_parent_);
 
-      if (stream.write_to_parent_ != -1 && stream.write_to_parent_ > 2) 
+      if (stream.write_to_parent_ != -1 && stream.write_to_parent_ > 2)
       	close(stream.write_to_parent_);
 
-      if (stream.err_write_ != -1 && stream.err_write_ > 2) 
+      if (stream.err_write_ != -1 && stream.err_write_ > 2)
       	close(stream.err_write_);
 
       // Close all the inherited fd's except the error write pipe
@@ -1444,7 +1444,7 @@ namespace detail {
 
       	int rbytes = util::read_atmost_n(
 				  fileno(stream_->error()),
-				  ebuf.buf.data(), 
+				  ebuf.buf.data(),
 				  ebuf.buf.size());
 
       	if (rbytes == -1) {
@@ -1538,12 +1538,12 @@ namespace detail
   {
     return Popen(std::forward<F>(farg), std::forward<Args>(args)...).wait();
   }
- 
+
   void pipeline_impl(std::vector<Popen>& cmds) { /* EMPTY IMPL */ }
 
   template<typename... Args>
-  void pipeline_impl(std::vector<Popen>& cmds, 
-                     const std::string& cmd, 
+  void pipeline_impl(std::vector<Popen>& cmds,
+                     const std::string& cmd,
                      Args&&... args)
   {
     if (cmds.size() == 0) {
@@ -1565,7 +1565,7 @@ namespace detail
 
 /*!
  * Run the command with arguments and wait for it to complete.
- * The parameters passed to the argument are exactly the same 
+ * The parameters passed to the argument are exactly the same
  * one would use for Popen constructors.
  */
 template<typename... Args>
