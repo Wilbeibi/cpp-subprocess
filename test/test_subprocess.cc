@@ -20,8 +20,8 @@ void test_input()
 
 void test_piping()
 {
-  auto cat = Popen({"cat", "../subprocess.hpp"}, output{PIPE});
-  auto grep = Popen({"grep", "template"}, input{cat.output()}, output{PIPE});
+  auto cat = Popen({"cat", "test_subprocess.cc"}, output{PIPE});
+  auto grep = Popen({"grep", "Popen"}, input{cat.output()}, output{PIPE});
   auto cut = Popen({"cut", "-d,", "-f", "1"}, input{grep.output()}, output{PIPE});
   auto res = cut.communicate().first;
   std::cout << res.buf.data() << std::endl;

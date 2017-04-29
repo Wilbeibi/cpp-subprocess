@@ -5,7 +5,7 @@ using namespace subprocess;
 
 void test_env()
 {
-  int st= Popen("./env_script.sh", environment{{
+  int st= Popen("../env_script.sh", environment{{
 					{"NEW_ENV1", "VALUE-1"},
 					{"NEW_ENV2", "VALUE-2"},
 					{"NEW_ENV3", "VALUE-3"}

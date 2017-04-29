@@ -1,0 +1,7 @@
+build/
+cmake-build-debug/
+test/cat_fredirect.txt
+
+.idea/
+*~
+
